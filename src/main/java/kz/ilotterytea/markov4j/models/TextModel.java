@@ -52,36 +52,50 @@ public class TextModel implements BaseModel<String> {
 
     @Override
     public Optional<String> generate() {
+        return generateWithChain(this.chains.get(new Random().nextInt(this.chains.size())));
+    }
+
+    public Optional<String> generateWithStartWord(String startWord) {
+        Optional<Chain<String>> optionalPreviousChain = this.chains.stream().filter(c -> c.getOriginalInput().equalsIgnoreCase(startWord)).findAny();
+
+        if (!optionalPreviousChain.isPresent()) {
+            return Optional.empty();
+        }
+
+        return generateWithChain(optionalPreviousChain.get());
+    }
+
+    private Optional<String> generateWithChain(Chain<String> chain) {
         StringBuilder sentence = new StringBuilder();
 
-        Chain<String> previousChain = this.chains.get(new Random().nextInt(this.chains.size()));
+        Chain<String> previousChain = chain;
 
         while (true) {
-        	sentence.append(previousChain.getOriginalInput()).append(" ");
-        	
+            sentence.append(previousChain.getOriginalInput()).append(" ");
+
             Optional<String> nextWord = previousChain.choose();
-            
+
             if (!nextWord.isPresent()) {
-            	break;
+                break;
             }
-            
+
             Optional<Chain<String>> nextChain = this.chains
-            		.stream()
-            		.filter(c -> c.getOriginalInput().equals(nextWord.get()))
-            		.findFirst();
+                    .stream()
+                    .filter(c -> c.getOriginalInput().equals(nextWord.get()))
+                    .findFirst();
 
             if (!nextChain.isPresent()) {
                 sentence.append(nextWord.get());
-            	break;
+                break;
             }
 
             previousChain = nextChain.get();
         }
 
         if (sentence.toString().isEmpty()) {
-        	return Optional.empty();
+            return Optional.empty();
         } else {
-        	return Optional.of(sentence.toString());
+            return Optional.of(sentence.toString());
         }
     }
 }
