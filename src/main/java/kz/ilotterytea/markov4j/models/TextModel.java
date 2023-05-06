@@ -98,4 +98,8 @@ public class TextModel implements BaseModel<String> {
             return Optional.of(sentence.toString());
         }
     }
+
+    public List<Chain<String>> getChains() {
+        return chains;
+    }
 }
