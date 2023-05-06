@@ -1,3 +1,5 @@
+[![GitHub Actions Badge](https://github.com/ilotterytea/markov4j/actions/workflows/ci.yml/badge.svg)](https://github.com/ilotterytea/markov4j/actions/workflows/ci.yml)
+
 # Markov4J
 Markov4J is a Markov chain generator for Java.
 Currently, it can be used for generating random sentences from large base of text.
