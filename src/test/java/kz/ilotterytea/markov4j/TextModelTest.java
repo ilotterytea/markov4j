@@ -59,4 +59,43 @@ public class TextModelTest {
 
         assert true;
     }
+
+    @Test
+    public void generateTextWithStartWordAndFixedLength() {
+        TextModel model = getModel();
+        String startWord = "will";
+
+        assert !model.getChains().isEmpty();
+
+        for (int i = 0; i < 5; i++) {
+            Optional<String> line = model.generateWithStartWord(startWord, 20);
+
+            if (line.isPresent()) {
+                System.out.println("\"" + startWord + "\" start word and fixed length: " + line.get());
+            } else {
+                assert false;
+            }
+        }
+
+        assert true;
+    }
+
+    @Test
+    public void generateTextWithFixedLength() {
+        TextModel model = getModel();
+
+        assert !model.getChains().isEmpty();
+
+        for (int i = 0; i < 5; i++) {
+            Optional<String> line = model.generate(20);
+
+            if (line.isPresent()) {
+                System.out.println("Random (with fixed length): " + line.get());
+            } else {
+                assert false;
+            }
+        }
+
+        assert true;
+    }
 }
