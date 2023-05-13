@@ -52,7 +52,21 @@ public class TextModel implements BaseModel<String> {
 
     @Override
     public Optional<String> generate() {
-        return generateWithChain(this.chains.get(new Random().nextInt(this.chains.size())));
+        return generateWithChain(this.chains.get(new Random().nextInt(this.chains.size())), null);
+    }
+
+    public Optional<String> generate(Integer fixedLength) {
+        return generateWithChain(this.chains.get(new Random().nextInt(this.chains.size())), fixedLength);
+    }
+
+    public Optional<String> generateWithStartWord(String startWord, Integer fixedLength) {
+        Optional<Chain<String>> optionalPreviousChain = this.chains.stream().filter(c -> c.getOriginalInput().equalsIgnoreCase(startWord)).findAny();
+
+        if (!optionalPreviousChain.isPresent()) {
+            return Optional.empty();
+        }
+
+        return generateWithChain(optionalPreviousChain.get(), fixedLength);
     }
 
     public Optional<String> generateWithStartWord(String startWord) {
@@ -62,10 +76,10 @@ public class TextModel implements BaseModel<String> {
             return Optional.empty();
         }
 
-        return generateWithChain(optionalPreviousChain.get());
+        return generateWithChain(optionalPreviousChain.get(), null);
     }
 
-    private Optional<String> generateWithChain(Chain<String> chain) {
+    private Optional<String> generateWithChain(Chain<String> chain, Integer fixedLength) {
         StringBuilder sentence = new StringBuilder();
 
         Chain<String> previousChain = chain;
@@ -90,6 +104,10 @@ public class TextModel implements BaseModel<String> {
             }
 
             previousChain = nextChain.get();
+
+            if (fixedLength != null && sentence.toString().length() > fixedLength) {
+                break;
+            }
         }
 
         if (sentence.toString().isEmpty()) {
